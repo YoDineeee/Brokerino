@@ -5,7 +5,7 @@ int main (){
   int results = 8;
   int Allquestions = 10;
    
-  double The_Final =  results /  Allquestions ;
+  double The_Final =  results /  (double) Allquestions ;
 
   std::cout<<The_Final<< std::endl;
 
