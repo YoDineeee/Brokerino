@@ -1,13 +1,12 @@
 #include <iostream>
 
 int main (){
-    double pi = 3.145678986545678898765789 ;
-    std::cout <<"the result is :" << pi << std::endl  ;
+  // lets assume that we have a situation where we can do the operation to calculate the persentage of the score when they ask
+  int results = 8;
+  int Allquestions = 10;
+   
+  double The_Final =  results /  Allquestions ;
 
-    float pi_1 =  3.145678986545678898765789 ;
-    std::cout<<"the result is :" << pi_1<< std::endl ;
-
-    long double pi_2=  3.145678986545678898765789 ;
-        std::cout<<"the result is :" << pi_2<< std::endl ;
+  std::cout<<The_Final<< std::endl;
 
 }
