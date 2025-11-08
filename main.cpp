@@ -2,11 +2,8 @@
 
 int main (){
   // lets assume that we have a situation where we can do the operation to calculate the persentage of the score when they ask
-  int results = 8;
-  int Allquestions = 10;
-   
-  double The_Final =  results /  (double) Allquestions ;
+  char Zigzag = -5;
 
-  std::cout<<The_Final<< std::endl;
+  std::cout<<Zigzag<< std::endl;
 
 }
