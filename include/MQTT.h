@@ -1,7 +1,9 @@
 #ifndef BROKERINO_INCLUDE_MQTT_H_
 #define  BROKERINO_INCLUDE_MQTT_H_
-
+using namespace std ;
 #include<cstdint>
+#include <stdint.h>
+
 
 // ---------------------------------------------------------------------------
 // MQTT Control Packet Types (per MQTT v3.1.1 / v5.0 spec)
@@ -40,17 +42,26 @@ namespace Mqtt {
     };
 
    union Mqtt_Header {
-    std::uint8_t byte ;
+    unsigned char byte;
     struct {
-        std::uint8_t retain =1;
-        std::unit8_t qos =2 ;
-        std::uint8_t dup = 1;
-        std:: unit8_t type =4
-
-
+        unsigned retain : 1;
+        unsigned qos : 2;
+        unsigned dup : 1;
+        unsigned type : 4;
     } bits;
-   };
+};
 
+
+struct Mqtt_Connect {
+    union  Mqtt_Header header ;
+    union {
+        unsigned char byte ;
+        struct {
+            
+        }
+    }
+
+}
 
 
 
