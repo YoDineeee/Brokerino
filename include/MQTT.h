@@ -8,7 +8,11 @@
 // --------------------------------------------------------------------------
 
 
-namespace mqtt{
+// MQTT  Packet structure --> [fixed header ] [variable header ] [Payload]
+
+
+
+namespace Mqtt {
     enum class ControlPacketTypes:uint8_t{
         kReserved0 = 0,
         kConnect = 1,
@@ -25,13 +29,29 @@ namespace mqtt{
         kPingreq = 12,
         kPingresp = 13,
         kDisconnect = 14,
-        kReserved15 = 15
+        kAuth = 15
 
     };
 
-    enum class Qos {
-
+    enum class Qos : unsigned int  {
+        kAtMostOnce =1,
+        kAtLeastOnce =2 ,
+        kExactlyOnce =3 
     };
+
+   union Mqtt_Header {
+    std::uint8_t byte ;
+    struct {
+        std::uint8_t retain =1;
+        std::unit8_t qos =2 ;
+        std::uint8_t dup = 1;
+        std:: unit8_t type =4
+
+
+    } bits;
+   };
+
+
 
 
 }
