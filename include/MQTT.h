@@ -4,6 +4,9 @@
 #include <stdint.h>
 
 
+
+
+
 #define  CONNACK_BYTE  0x20
 #define PUBLISH_BYTE  0x30
 #define PUBACK_BYTE   0x40
@@ -29,35 +32,36 @@
 namespace Mqtt {
     enum class ControlPacketTypes:uint8_t{
         kReserved0 = 0,
-        //client only 
+        //Connection request
         kConnect = 1,
-        //server only 
+        //Connect acknowledgment
         kConnack = 2, 
-        //client +server
+        //Publish message
         kPublish = 3,
-        //client
+        //Publish acknowledgment (QoS 1)
         kPuback = 4,
-        //server 
+        //Publish received (QoS 2 delivery part 1)
         kPubrec = 5,
-        //server
+        //Publish release (QoS 2 delivery part 2)
         kPubrel = 6,
-        //server 
+        //Publish complete (QoS 2 delivery part 3)
         kPubcomp = 7,
-        //client
+        //Subscribe request
         kSubscribe = 8,
-        //server 
+        //Subscribe acknowledgment
         kSuback = 9,
-        //client
+        //Unsubscribe request
         kUnsubscribe = 10,
-        //server 
+        // 	Unsubscribe acknowledgment
         kUnsuback = 11,
-        //client 
+        //PING request
         kPingreq = 12,
-        //server 
+        //PING response
         kPingresp = 13,
-        //client
+        //Disconnect notification
         kDisconnect = 14,
-        kAuth = 15
+        
+        kReserved15 = 15
 
     };
 
@@ -83,115 +87,139 @@ struct Mqtt_Connect {
     union {
         unsigned char byte ;
         struct {
-            
+            int reserved :1;
+            unsigned clean_session:1;
+            unsigned will :1;
+            unsigned will_qos:2;
+            unsigned will_retain:1;
+            unsigned password :1;
+            unsigned username :1;      
         } bits ;
-    }
-    struct {
+    } ;
 
+    struct{
+        unsigned short kepaalive ;
+        unsigned char *client_id;
+        unsigned char *user_name;
+        unsigned char *password;
+        unsigned char *will_message;
+        unsigned char *will_topic;
     }Payload;
+};
 
-}
 
 
 struct Mqtt_Connack{
      union  Mqtt_Header header ;
      union {
+        unsigned char byte ;
+        struct{
+            unsigned session_presnet :1;
+            unsigned reserved :7;
 
-     }
-};
+        } bits;
 
-
-struct Mqtt_Publish{
-     union  Mqtt_Header header ;
-     struct {
-
-     } 
-
-    }
-
-
-struct Mqtt_Puback{
-     union  Mqtt_Header header ;
-
-
-};
-
-
-struct Mqtt_Puberc{
-     union  Mqtt_Header header ;
-
-};
-
-
-struct Mqtt_Pubrel{
-     union  Mqtt_Header header ;
+     };
+     unsigned char return_code ;
 };
 
 
 
-struct Mqtt_Pubcomp{
-     union  Mqtt_Header header ;
-
-};
 
 struct Mqtt_Subscribe{
      union  Mqtt_Header header ;
-
+     unsigned short pkt_id;
+     unsigned short tupels_len ;
      struct {
-
+        unsigned short topic_len;
+        unsigned char *topic;
+        unsigned qos ;
      }*truples;
 };
 
+
+struct Mqtt_Unsubcribe {
+     union  Mqtt_Header header ;
+     unsigned short pkt_id;
+     unsigned short tupels_len ;
+     struct {
+        unsigned short topic_len;
+        unsigned char *topic;
+        unsigned qos ;
+     }*truples;
+};
+
+
+
 struct Mqtt_Suback{
-     union  Mqtt_Header header ;
-};
-
-struct Mqtt_Suback{
-     union  Mqtt_Header header ;
-};
-
-
-struct Mqtt_Unsubscribe{
-    struct {
-
-    }*truples ;
-}
-
-struct Mqtt_Unsuback{
-     union  Mqtt_Header header ;
-};
-
-
-struct Mqtt_Pingreq{
-     union  Mqtt_Header header ;
-};
-
-
-
-struct Mqtt_Pingresp{
     union  Mqtt_Header header ;
-
+    unsigned short pkt_id;
+    unsigned short return_codes_len ;
+    unsigned char *return_codes ;  
 };
 
+struct Mqtt_Publish{
+   union  Mqtt_Header header ;
+   unsigned short pkt_id;
+   unsigned short topiclen;
+   unsigned short *topic;
+   unsigned char payloadlen;
+   unsigned char *payload;
+};
+
+
+
+
+
+struct Mqtt_Ack{
+     union  Mqtt_Header header ;
+     unsigned short pkt_id;
+};
+
+// since PUBACK, PUBREC, PUBREL, PUBCOMP, UNSUBACK have the same packet structure 
+
+typedef struct Mqtt_Ack Mqtt_Puback ;
+typedef struct Mqtt_Ack Mqtt_Puberc;
+typedef struct Mqtt_Ack Mqtt_Pubrel;
+typedef struct Mqtt_Ack Mqtt_Pubcomp;
+typedef struct Mqtt_Ack Mqtt_Unsuback;
+
+// since DISCONNECT ,PINGREQ and PINGRESP have the same fixed-header  structure
+typedef union Mqtt_Header Mqtt_Disconnect;
+typedef union Mqtt_Header Mqtt_Pingreq;
+typedef union Mqtt_Header Mqtt_Pingresp;
+
+
+//generic Mqtt packet 
+
+union Mqtt_Packet{
+    struct Mqtt_Ack ack;
+    union Mqtt_Header header ;
+    struct Mqtt_Connect connect ;
+    struct Mqtt_Connack connack ;
+    struct Mqtt_Subscribe subscribe ;
+    struct Mqtt_Suback suback ;
+    struct Mqtt_Unsubcribe unsubscribe ;
+    struct Mqtt_Publish publish ;
     
-
-
-
-struct Mqtt_Disconnect{
-    union  Mqtt_Header header ;
 };
 
 
-
-
-struct Mqtt_Auth{
-    union  Mqtt_Header header ;
-}; 
-
-
+// int Mqtt_encode_length(unsigned char * , size_t);
+// unsigned long long Mqtt_decode_length(const unsigned char **);
+// int unpack_mqtt_packet(const unsigned char *, union Mqtt_packet *);
+// unsigned char *pack_mqtt_packet(const union Mqtt_packet *, unsigned);
 
 
 
+// union Mqtt_Header *mqtt_packet_header(unsigned char);
+// struct Mqtt_Ack *mqtt_packet_ack(unsigned char , unsigned short);
+// struct Mqtt_Connack *mqtt_packet_connack(unsigned char, unsigned char, unsigned char);
+// struct Mqtt_Suback *mqtt_packet_suback(unsigned char, unsigned short,
+//                                        unsigned char *, unsigned short);
+// struct Mqtt_Publish *mqtt_packet_publish(unsigned char, unsigned short, size_t,
+//                                          unsigned char *, size_t, unsigned char *);
+// void mqtt_packet_release(union Mqtt_Packet *, unsigned)
 
 
 
@@ -200,8 +228,20 @@ struct Mqtt_Auth{
 
 
 
-}
 
 
 
-#endif 
+
+
+
+
+
+
+
+
+
+
+
+
+
+#endif //hello world    
