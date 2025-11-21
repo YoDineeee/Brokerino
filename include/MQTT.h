@@ -2,6 +2,7 @@
 #define  BROKERINO_INCLUDE_MQTT_H_
 #include<cstdint>
 #include <stdint.h>
+#include<cstring>
 
 
 
@@ -205,43 +206,28 @@ union Mqtt_Packet{
 };
 
 
-// int Mqtt_encode_length(unsigned char * , size_t);
-// unsigned long long Mqtt_decode_length(const unsigned char **);
-// int unpack_mqtt_packet(const unsigned char *, union Mqtt_packet *);
-// unsigned char *pack_mqtt_packet(const union Mqtt_packet *, unsigned);
+int Mqtt_encode_length(unsigned char * , size_t);
+unsigned long long Mqtt_decode_length(const unsigned char **);
+int unpack_mqtt_packet(const unsigned char *, union Mqtt_packet *);
+unsigned char *pack_mqtt_packet(const union Mqtt_packet *, unsigned);
 
 
 
-// union Mqtt_Header *mqtt_packet_header(unsigned char);
-// struct Mqtt_Ack *mqtt_packet_ack(unsigned char , unsigned short);
-// struct Mqtt_Connack *mqtt_packet_connack(unsigned char, unsigned char, unsigned char);
-// struct Mqtt_Suback *mqtt_packet_suback(unsigned char, unsigned short,
-//                                        unsigned char *, unsigned short);
-// struct Mqtt_Publish *mqtt_packet_publish(unsigned char, unsigned short, size_t,
-//                                          unsigned char *, size_t, unsigned char *);
-// void mqtt_packet_release(union Mqtt_Packet *, unsigned)
+union Mqtt_Header *mqtt_packet_header(unsigned char);
+
+struct Mqtt_Ack *mqtt_packet_ack(unsigned char , unsigned short);
+
+struct Mqtt_Connack *mqtt_packet_connack(unsigned char, unsigned char, unsigned char);
+
+struct Mqtt_Suback *mqtt_packet_suback(unsigned char, unsigned short,
+                                       unsigned char *, unsigned short);
+
+struct Mqtt_Publish *mqtt_packet_publish(unsigned char, unsigned short, size_t,
+                                         unsigned char *, size_t, unsigned char *);
+
+void mqtt_packet_release(union Mqtt_Packet *, unsigned);
+
+}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-#endif //hello world    
+#endif 
