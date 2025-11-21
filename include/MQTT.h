@@ -1,7 +1,6 @@
 #ifndef BROKERINO_INCLUDE_MQTT_H_
 #define  BROKERINO_INCLUDE_MQTT_H_
 #include<cstdint>
-#include <stdint.h>
 #include<cstring>
 
 
