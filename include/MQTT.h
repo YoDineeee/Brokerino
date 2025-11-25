@@ -114,7 +114,7 @@ struct Mqtt_Connack{
      union {
         unsigned char byte ;
         struct{
-            unsigned session_presnet :1;
+            unsigned session_presnet:1;
             unsigned reserved :7;
 
         } bits;
