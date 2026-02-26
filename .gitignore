@@ -1,0 +1,35 @@
+# Build directories (never commit these)
+build/
+build-*/
+out/
+.build/
+
+# CMake generated files that don't belong in source tree
+compile_commands.json     # symlink this from build/ instead: ln -s build/compile_commands.json .
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CTestTestfile.cmake
+_deps/
+
+# Binaries
+*.o
+*.a
+*.so
+*.dylib
+*.exe
+brokerino
+
+# IDE / editor artifacts
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# clangd cache
+.cache/
+
+# Sanitizer output
+*.log

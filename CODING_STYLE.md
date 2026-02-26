@@ -1,6 +1,6 @@
 # MQTT Broker From Scratch (C++)
 
-hi, this is my personal project where im trying to build an MQTT broker **from scratch** in modern C++ ( C++17).
+hi, this is my personal project where im trying to build an MQTT broker **from scratch** in modern C++ ( C++20).
 
 main goal is not just to make “something that works”, but to actually understand:
 - how MQTT protocol really works inside (sessions, topics, qos, etc.)
