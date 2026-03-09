@@ -3,14 +3,14 @@
 #include<netinet/in.h>
 #include<sys/socket.h>  // server : {starting the inisitializing }WSASTrartup(),{create the socket }socket() , {using an address to send or to recieve packets }bind() ,{listen to the socket}listen() 
 #include<unistd.h>
-#include<stdexpect>
+#include<stdexcept>
 #include<iostream>
 
 namespace  brokerino::networking {
 
     Tcpserver::Tcpserver(int port)
-            : port_(port);
-              server_fd_(-1);
+            : port_(port),
+              server_fd_(-1),
               is_running_(flase) {}
 
 
@@ -24,14 +24,18 @@ namespace  brokerino::networking {
             throw std::runtime_error("Failed to create socket");
         }
         int opt = 1;
-        setsockopt(server_fd_ ,SOL_SOCkET, SO_REUSEADDR , &opt , sizeof(opt));
+        setsockopt(server_fd_ ,SOL_SOCKET, SO_REUSEADDR , &opt , sizeof(opt));
 
-        sockaddr_in addr{}
+        sockaddr_in addr{};
         addr.sin_family = AF_INET;
         addr.sin_addr.s_addr = INADDR_ANY ;
         addr.sin_port = htons(port_);
 
-        if (bind (server_fd_ , reinterpert_cast<sockaddr*>(&addr),sizeof(addr))==-1){
+        if (bind (server_fd_ , reinterpret_cast<sockaddr*>(&addr),sizeof(addr))==-1){
+            throw std::runtime_error("Failed to listen on socket");
+        }
+         
+        if (listen(server_fd_ , kBacklog )==-1){
             throw std::runtime_error("Failed to listen on socket");
         }
 
@@ -56,10 +60,10 @@ namespace  brokerino::networking {
     }
 
     void TcpServer::Stop(){
-        is_running_ = flase;
+        is_running_ = false;
 
         if (server_fd_ != -1){
-            close(server_fd_)
+            close(server_fd_);
             server_fd_ = -1;
         }
     }

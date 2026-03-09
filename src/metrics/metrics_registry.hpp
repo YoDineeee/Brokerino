@@ -1,1 +1,7 @@
 // messages/sec  , connected clients , memory usage , latency
+
+#ifndef BROKERINO_SRC_FEATURES_PRIORITY_QUEUE_HPP_
+#define BROKERINO_SRC_FEATURES_PRIORITY_QUEUE_HPP_
+
+#endif
+

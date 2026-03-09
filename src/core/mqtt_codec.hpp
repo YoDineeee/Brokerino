@@ -1,0 +1,12 @@
+#ifndef BROKERINO_SRC_CORE_MQTT_CODEC_HPP_
+#define BROKERINO_SRC_CORE_MQTT_CODEC_HPP_
+
+
+
+
+
+
+
+
+
+#endif
