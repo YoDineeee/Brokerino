@@ -1,0 +1,1 @@
+// client_id, subscriptions ,clean session, QoS state, last will
