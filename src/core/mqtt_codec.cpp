@@ -49,8 +49,8 @@ namespace brokerino::core{
         out.push_back(first_byte);
 
         for (auto type : EncodeRemainingLength(remaining_length))
-            out.push_back(byte);
-        return out 
+             out.push_back(byte);
+         return out;
     }
 
 
