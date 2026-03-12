@@ -1,14 +1,14 @@
-#ifndef  BROKERINO_SRC_PRESISTENCE_STORAGE_HPP_
-#define BROKERINO_SRC_PRESISTENCE_STORAGE_HPP_
+#ifndef  BROKERINO_SRC_PERSISTENCE_STORAGE_HPP_
+#define BROKERINO_SRC_PERSISTENCE_STORAGE_HPP_
 
 #include "core/mqtt_packet.hpp"
 #include "core/mqtt_session.hpp"
 #include<string>
 #include<vector> 
 
-struct sqlight3;
+struct sqlite3;
 
-namespace brokerino::presistence{
+namespace brokerino::persistence{
     class Storage{
         public:
         explicit Storage(const std::string& db_path);
