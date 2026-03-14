@@ -5,7 +5,7 @@
 #include "networking / connection.hpp"
 #include "core/mqtt_packet.hpp"
 #include "core/mqtt_session.hpp"
-#include "message / subscription_map.hpp"
+#include "messaging/ subscription_map.hpp"
 #include "persistence / storage.hpp"
 #include "auth / simple_auth.hpp"
 
@@ -47,7 +47,7 @@ namespace brokerino{
 
             //subsystems
             networking::TcpServer server_;
-            message::SubscriptionMap sub_map_;
+            messaging::SubscriptionMap sub_map_;
             persistence::storage storage_ ;
             auth::SimpleAuth auth_;
 

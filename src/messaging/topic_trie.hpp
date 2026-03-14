@@ -1,11 +1,11 @@
-#ifndef BROKERINO_SRC_MESSAGE_TOPIC_TRIE_HPP_
-#define BROKERINO_SRC_MESSAGE_TOPIC_TRIE_HPP_
+#ifndef BROKERINO_SRC_MESSAGING_TOPIC_TRIE_HPP_
+#define BROKERINO_SRC_MESSAGING_TOPIC_TRIE_HPP_
 
 #include <string>
 #include <vector>
 #include<unordered_map>
 
-namespace brokerino::message{
+namespace brokerino::messaging{
     struct TrieNode{
         std::unordered_map<std::string,TrieNode> children;
         bool is_end = false ; // the subscription terminates

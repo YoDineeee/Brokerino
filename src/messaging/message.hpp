@@ -1,12 +1,12 @@
-#ifndef BROKERINO_SRC_MESSAGE_MESSAGE_HPP_
-#define BROKERINO_SRC_MESSAGE_MESSAGE_HPP_
+#ifndef BROKERINO_SRC_MESSAGE_MESSAGING_HPP_
+#define BROKERINO_SRC_MESSAGE_MESSAGING_HPP_
 
 
 #include<cstdint>
 #include<string>
 #include<vector>
 
-namespace brokerino::message{
+namespace brokerino::messaging{
     struct Message{
         std::string topic;
         std::vector <std::uint8_t> payload;

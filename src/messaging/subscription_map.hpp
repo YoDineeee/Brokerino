@@ -1,13 +1,13 @@
-#ifndef BROKERINO_SRC_MESSAGE_SUBSCRIPTION_MAP_HPP_
-#define BROKERINO_SRC_MESSAGE_SUBSCRIPTION_MAP_HPP_
+#ifndef BROKERINO_SRC_MESSAGING_SUBSCRIPTION_MAP_HPP_
+#define BROKERINO_SRC_MESSAGING_SUBSCRIPTION_MAP_HPP_
 
-#include "messgae/topic_trie.hpp"
-#include "message/message.cpp"
+#include "messaging/topic_trie.hpp"
+#include "messaging/message.cpp"
 #include <string>
 #include<unordered_map>
 #include <vector>
 
-namespace brokerino::message{
+namespace brokerino::messaging{
 
     class SubscriptionMap{
         public:

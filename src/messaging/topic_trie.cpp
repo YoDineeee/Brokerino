@@ -1,6 +1,6 @@
-#include "message/topic_trie.hpp"
+#include "messaging/topic_trie.hpp"
 
-namespace brokerino::message{
+namespace brokerino::messaging{
     std::vector<std::string> TopicTrie::Split(const std::string& topic){
         std::vector<std::string> levels;
         std::string current ;

@@ -1,6 +1,6 @@
-#include "message/subscription_map.hpp"
+#include "messaging/subscription_map.hpp"
 
-namespace brokerino::message{
+namespace brokerino::messaging{
     void SubscriptionMap :: Subscribe(const std::string& client_id , const std::strings& topic_filter , std::uint8_t qos  ){
         auto &entry = clients_[client_id];
         entry.trie.Insert(topic_filter);
