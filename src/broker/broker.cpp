@@ -139,8 +139,93 @@ namespace brokerino{
 
     void Broker::HandleConnect(int fd , const std::vector<std::uint8_t>& payload){
         auto packet = core::ParseConnect(payload);
+        if (!packet){
+            SendToClient(fd, core::SerializeConnack(
+                {false, core::ConnectReturnCode::RefusedBadProtocol}));
+                return;
+        }
 
+        if (!auth_.Authenticate(packet -> username , packet -> password , "")){
+            SendToClient(fd, core::SerializeConnack(
+                {false, core::ConnectReturnCode::RefusedBadCredentials}));
+                return;   
+        }
+        auto session = core::CreateSession(*packet);
+        sessions_[fd]= session;
+
+        if (!session.clean_session)
+            storage_.SaveSession(session);
+
+        
+        for (const auto& [filter,qos]: session.subscriptions)
+            sub_map_.Subscribe(session.client_id,filter,qos);
+
+        SendToClient(fd, core::SerializeConnack (
+            {false, core::ConnectReturnCode::Accepted}));
+
+        std::cout << "[Broker] Accepted :" << packet -> client_id << "\n";
+        
     }
+
+    void Broker::HandlePublish(int fd , const core::FixedHeader& header , const std::vector <std::uint8_t>& payload){
+        auto packet = core::ParsePublish(header,payload);
+        if(!packet) return;
+
+        const auto subscribers = sub_map_.Match(packet -> topic);
+
+        for (const auto& client_id : subscribers){
+            for (auto* [cfd ,session] : sessions_){
+                if (session.client_id != client_id) continue ;
+
+                if (packet -> qos == 1){
+                    packet -> packet_id = core::NextPacketId(session_[cdf]);
+                    core::TrackInflight (session_[cfd , *packet]);
+                    storage_.SaveMessage(client_id ,*packet );
+                }
+                SendToClient(cfd,core::SerializePublish(*packet));
+            }
+        }
+
+        //puback
+        if(packet -> qos == 1 && packet -> packet_id)
+            SendToClient(fd,core::SerializePuback({*packet -> packet_id }));
+       }
+
+       void Broker::HandleSubscribe(int fd ,const std::vector<std::uint8_t>& payload){
+            auto packet = core::ParseSubscribe(payload);
+            if(!packet) return;
+
+            const std::string client_id = ClientIdForFd(fd);
+            std::vector<std::uint8_t> return_codes;
+
+            for (const auto& sub: packet -> subscriptions){
+                sub_map_.Subscribe(client_id,sub.topic_filter , sub.qos);
+                core::AddSubscription(session_[fd] , sub.topic_filter , sub.qos);
+                return_codes.push_back(sub.qos);
+            }
+
+            if(!session_[fd].clean_session)
+                storage_.SaveSession(sessions_[fd]);
+
+             SendToClient(fd,core::SerializeSuback({packet -> packet_id , return_codes}));
+       }
+
+       void Broker::HandlePingreq(int fd){
+            SendToClient(fd, core::SerializePingresp());
+       }
+
+       void Broker::HandleDisconnect(int fd){
+            OnDisconnect(fd);
+       }
+
+       //helper
+
+       void Broker::SendToClient(int fd , const std::vector<std::uint8_t>& data ){
+            auto it = connections_.find(fd);
+            if(it == connection_.end()) return;
+            it -> second -> Send(data);
+            return it -> second.client_id;
+       }
 
 
 }
