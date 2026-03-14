@@ -1,0 +1,11 @@
+so basically :
+
+config/ to deal with hard coded  port  and db path 
+
+logging/ a place to control the ouput 
+
+metrics/ simple counters ( to know what the broker is doing )
+
+features /priority_queue ---> in the future will be important (for the face detection)
+         /enricher --> for raspberry Pi 
+         /escalation -> security managment 

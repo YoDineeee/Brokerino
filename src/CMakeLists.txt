@@ -1,27 +1,25 @@
 add_library(brokerino_core STATIC
     # Config
     config/config.cpp
-
     # Codec / protocol
     core/mqtt_codec.cpp
-
+    core/mqtt_packet.cpp
+    # Session
+    session/mqtt_session.cpp
     # Message routing
-    message/topic_trie.cpp
-    message/subscription_map.cpp
-
+    messaging/topic_trie.cpp
+    messaging/subscription_map.cpp
     # Persistence
     persistence/storage.cpp
-
+    persistence/recovery.cpp
     # Features
     features/priority_queue.cpp
     features/enricher.cpp
-
     # Auth
     auth/simple_auth.cpp
-
     # Networking
     networking/connection.cpp
-
+    networking/tcp_server.cpp
     # Broker
     broker/broker.cpp
 )
