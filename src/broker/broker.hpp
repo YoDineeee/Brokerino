@@ -1,20 +1,20 @@
 #ifndef BROKERINO_SRC_BROKER_BROKER_HPP_
 #define BROKERINO_SRC_BROKER_BROKER_HPP_
 
-#include "networking / tcp_server.hpp"
-#include "networking / connection.hpp"
+#include "networking/tcp_server.hpp"
+#include "networking/connection.hpp"
 #include "core/mqtt_packet.hpp"
-#include "core/mqtt_session.hpp"
-#include "messaging/ subscription_map.hpp"
-#include "persistence / storage.hpp"
-#include "auth / simple_auth.hpp"
+#include "session/mqtt_session.hpp"
+#include "messaging/subscription_map.hpp"
+#include "persistence/storage.hpp"
+#include "auth/simple_auth.hpp"
 
-#include<unordered_map>
+#include <unordered_map>
 #include <string>
-#include<mutex> 
+#include <mutex> 
 #include <memory>
-#include<vector>
-#include<cstdint>
+#include <vector>
+#include <cstdint>
 
 
 
@@ -48,7 +48,7 @@ namespace brokerino{
             //subsystems
             networking::TcpServer server_;
             messaging::SubscriptionMap sub_map_;
-            persistence::storage storage_ ;
+            persistence::Storage storage_ ;
             auth::SimpleAuth auth_;
 
             //state

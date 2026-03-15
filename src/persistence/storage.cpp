@@ -175,12 +175,7 @@ namespace brokerino::persistence{
 
     return packets;
 
-
     }
-    
-  
-
-
 }
 
 
