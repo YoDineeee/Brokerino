@@ -14,7 +14,7 @@ namespace brokerino::messaging{
         bool retain;
 
     };
-}
+}// namespace brokerino::messaging
 
 
 

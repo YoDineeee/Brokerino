@@ -52,4 +52,4 @@ namespace brokerino::networking{
 
     bool Connetion::IsConnected() const {return connected_;}
     int  Connection::GetFd() const {return fd_;}
-}
+} // namespace brokerino::networking

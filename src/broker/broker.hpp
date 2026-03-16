@@ -7,59 +7,61 @@
 #include "session/mqtt_session.hpp"
 #include "messaging/subscription_map.hpp"
 #include "persistence/storage.hpp"
+#include "persistence/recovery.hpp"
 #include "auth/simple_auth.hpp"
 
 #include <unordered_map>
 #include <string>
-#include <mutex> 
+#include <mutex>
 #include <memory>
 #include <vector>
 #include <cstdint>
 
+namespace brokerino {
 
+class Broker {
+public:
+    explicit Broker(const std::string& db_path, int port);
+    ~Broker() = default;
 
-namespace brokerino{
-    class Broker{
-        public:
-            explicit Broker (const std::string& db_path, int port);
-            ~Broker() = default;
+    Broker(const Broker&)            = delete;
+    Broker& operator=(const Broker&) = delete;
 
-            Broker(const Broker&) = delete;
-            Broker& operator =(const Broker& ) = delete;
+    void Run();
+    void Stop();
 
-            void Run();
-            void Stop();
-        private:
-            void OnClientConnected(int fd);
-            void OnData(int fd , const std::vector<std::uint8_t>& data);
-            void OnDisconnect(int fd);
-            //packet handler
-            void HandleConnect(int fd, const std::vector<std::uint8_t>& payload);
-            void HandlePublish(int fd, const core::FixedHeader& header ,const std::vector<std::uint8_t>& payload);
-            void HandleSubscribe(int fd, const std::vector<std::uint8_t>& payload);
-            void HandlePuback(int fd, const std::vector<std::uint8_t>& payload);
-            void HandlePingreq(int fd);
-            void HandleDisconnect(int fd);
+private:
+    void OnClientConnected(int fd);
+    void OnData            (int fd, const std::vector<std::uint8_t>& data);
+    void OnDisconnect      (int fd);
 
-            // helper
-            void SendToClient(int fd , const std::vector<std::uint8_t>& data );
-            std::string ClientIdForFd(int fd)const ;
+    // Packet handlers
+    void HandleConnect   (int fd, const std::vector<std::uint8_t>& payload);
+    void HandlePublish   (int fd, const core::FixedHeader& header,
+                                  const std::vector<std::uint8_t>& payload);
+    void HandleSubscribe (int fd, const std::vector<std::uint8_t>& payload);
+    void HandlePuback    (int fd, const std::vector<std::uint8_t>& payload);
+    void HandlePingreq   (int fd);
+    void HandleDisconnect(int fd);
 
-            //subsystems
-            networking::TcpServer server_;
-            messaging::SubscriptionMap sub_map_;
-            persistence::Storage storage_ ;
-            auth::SimpleAuth auth_;
+    // Helpers
+    void        SendToClient (int fd, const std::vector<std::uint8_t>& data);
+    std::string ClientIdForFd(int fd) const;
 
-            //state
-            std::unordered_map<int , std::vector<std::uint8_t>> buffers_;
-            std::unordered_map<int, core::Session> sessions_;
-            std::unordered_map<int , std::unique_ptr<networking::Connection>> connections_;
+    // Subsystems
+    networking::TcpServer      server_;
+    messaging::SubscriptionMap sub_map_;
+    persistence::Storage       storage_;
+    auth::SimpleAuth           auth_;
 
-            std::mutex mutex_;
+    // State
+    std::unordered_map<int, std::vector<std::uint8_t>>               buffers_;
+    std::unordered_map<int, core::Session>                           sessions_;
+    std::unordered_map<int, std::unique_ptr<networking::Connection>> connections_;
 
-    };
-}
+    std::mutex mutex_;
+};
 
+} // namespace brokerino
 
 #endif

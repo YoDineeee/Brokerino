@@ -176,7 +176,7 @@ namespace brokerino::persistence{
     return packets;
 
     }
-}
+} // namespace brokerino::persistence
 
 
 

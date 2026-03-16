@@ -228,4 +228,4 @@ namespace brokerino{
        }
 
 
-}
+} // namespace brokerino

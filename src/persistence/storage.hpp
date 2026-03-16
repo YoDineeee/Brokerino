@@ -37,7 +37,7 @@ namespace brokerino::persistence{
 
          sqlite3* db_ = nullptr;
     };
-}
+} // namespace brokerino::persistence
 
 
 #endif

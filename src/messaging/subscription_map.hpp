@@ -33,6 +33,6 @@ namespace brokerino::messaging{
 
         std::unordered_map<std::string,ClientEntry> clients_; //client_id ->entry 
     };
-}
+} // namespace brokerino::messaging
 
 #endif

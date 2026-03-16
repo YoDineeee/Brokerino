@@ -31,4 +31,4 @@ namespace brokerino::messaging{
     void TopicTrie ::
 
 
-}
+} // namespace brokerino::messaging

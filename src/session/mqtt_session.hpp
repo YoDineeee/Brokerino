@@ -34,6 +34,6 @@ namespace brokerino::core{
     void AcknowledgeInFlight(session& session , std::uint16_t packet_id);
 
     std::uint16_t NextPacketId(Session& session );
-}
+} // namespace brokerino::session
 
 #endif

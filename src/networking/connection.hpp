@@ -38,6 +38,6 @@ namespace brokerino:: networking{
     };
 
 
-}
+} // namespace brokerino::networking
 
 #endif

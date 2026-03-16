@@ -32,4 +32,4 @@ namespace brokerino::auth{
 
 
 
-}
+}  // namespace brokerino::auth

@@ -17,4 +17,4 @@ namespace brokerino:: persistence {
         }
     }
 
-}
+} // namespace brokerino::persistence

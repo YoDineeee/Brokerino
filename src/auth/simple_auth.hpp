@@ -1,5 +1,5 @@
-#ifndef BROKERINO_SRC_AUTH_SIMPLE_AUTH_HPP
-#define BROKERINO_SRC_AUTH_SIMPLE_AUTH_HPP
+#ifndef BROKERINO_SRC_AUTH_SIMPLE_AUTH_HPP_
+#define BROKERINO_SRC_AUTH_SIMPLE_AUTH_HPP_
 
 #include <string>
 #include <unordered_map>
@@ -21,7 +21,7 @@ namespace brokerino::auth{
 
     }
 
-}
+} // namespace brokerino::auth
 
 
 

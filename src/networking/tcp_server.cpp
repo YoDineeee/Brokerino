@@ -71,7 +71,7 @@ namespace  brokerino::networking {
     bool TcpServer::IsRunning() const {return is_running_;}
     int TcpServer::GetPort() const {return port_;}           
 
-}
+} // namespace brokerino::networking
 
 
 
@@ -80,4 +80,3 @@ namespace  brokerino::networking {
 
 
 
-void 

@@ -32,4 +32,4 @@ namespace brokerino::core{
         session.next_packet_id =(session.next_packet_id == 65535 ) ? 1 : session.next_packet_id + 1;
         return id;
     ]
-}
+}// namespace brokerino::session
