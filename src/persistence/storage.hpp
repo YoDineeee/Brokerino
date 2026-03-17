@@ -1,43 +1,40 @@
-#ifndef  BROKERINO_SRC_PERSISTENCE_STORAGE_HPP_
-#define BROKERINO_SRC_PERSISTENCE_STORAGE_HPP_
+#ifndef BROKERINO_SRC_PERSISTENCE_STORAGE_HPP
+#define BROKERINO_SRC_PERSISTENCE_STORAGE_HPP
 
 #include "core/mqtt_packet.hpp"
-#include "core/mqtt_session.hpp"
-#include<string>
-#include<vector> 
+#include "session/mqtt_session.hpp"
+#include <string>
+#include <vector>
 
 struct sqlite3;
 
-namespace brokerino::persistence{
-    class Storage{
-        public:
-        explicit Storage(const std::string& db_path);
-        ~Storage();
+namespace brokerino::persistence {
 
-        Storage(const Storage&) = delete;
-        Storage& operator = (const Storage&) = delete ;
+class Storage {
+public:
+    explicit Storage(const std::string& db_path);
+    ~Storage();
 
-        //sessions
-        void SaveSession (const core::Session& session);
-        void DeleteSession ( const core::string& client_id );
+    Storage(const Storage&)            = delete;
+    Storage& operator=(const Storage&) = delete;
 
-        std::vector<core::Session> LoadALLSessions();
+    // Sessions
+    void SaveSession  (const core::Session& session);
+    void DeleteSession(const std::string& client_id);
+    std::vector<core::Session> LoadAllSessions();
 
-        //message
-        void SaveMessage(const std::string& client_id , const core::PublishPacket& packet );
-        
-        void DeleteMessage ( const std::string& client_id , std::uint16_t packet_id);
+    // Messages
+    void SaveMessage (const std::string& client_id,const core::PublishPacket& packet);
+    void DeleteMessage (const std::string& client_id,  std::uint16_t packet_id);
+    std::vector<core::PublishPacket>  LoadMessagesForClient(const std::string& client_id);
 
-        std::vector<core::PublishPacket> LoadMessagesForClient(const std::string& client_id );
+private:
+    void InitSchema();
+    void Exec(const std::string& sql);
 
-        private:
+    sqlite3* db_ = nullptr;
+};
 
-        void InitSchema();
-        void Exce(const std::string& sql);
-
-         sqlite3* db_ = nullptr;
-    };
 } // namespace brokerino::persistence
-
 
 #endif

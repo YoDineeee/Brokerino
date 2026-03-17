@@ -1,20 +1,19 @@
-#include "persistence/ storage.hpp"
-#include "core /mqtt_session.hpp"
-#include "message /subscription_map.hpp"
-#include  <vector>
+#include "persistence/recovery.hpp"
 
-namespace brokerino:: persistence {
-    //called once on broker
-    void Recover(Storage& storage, std::vector<core::Session>& session_out, message::subscriptionMap& sub_map_out ) {
-        session_out = storage.LoadALLSessions();
+namespace brokerino::persistence {
 
-        for (const auto& session:sessions_out){
-            if (session.clean_session) continue;
+void Recover(Storage&                    storage,
+             std::vector<core::Session>& sessions_out,
+             messaging::SubscriptionMap& sub_map_out) {
 
-            for (const auto& [filter,qos]:session.subscriptions){
-                sub_map_out.Subscribe(session.client_id,filter,qos);
-            }
-        }
+    sessions_out = storage.LoadAllSessions();
+
+    for (const auto& session : sessions_out) {
+        if (session.clean_session) continue;
+
+        for (const auto& [filter, qos] : session.subscriptions)
+            sub_map_out.Subscribe(session.client_id, filter, qos);
     }
+}
 
 } // namespace brokerino::persistence
