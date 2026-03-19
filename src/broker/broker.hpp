@@ -1,5 +1,5 @@
-#ifndef BROKERINO_SRC_BROKER_BROKER_HPP_
-#define BROKERINO_SRC_BROKER_BROKER_HPP_
+#ifndef BROKERINO_SRC_BROKER_BROKER_HPP
+#define BROKERINO_SRC_BROKER_BROKER_HPP
 
 #include "networking/tcp_server.hpp"
 #include "networking/connection.hpp"

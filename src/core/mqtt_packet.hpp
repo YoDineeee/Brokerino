@@ -1,5 +1,5 @@
-#ifndef BROKERINO_SRC_CORE_MQTT_PACKET_HPP_
-#define BROKERINO_SRC_CORE_MQTT_PACKET_HPP_
+#ifndef BROKERINO_SRC_CORE_MQTT_PACKET_HPP
+#define BROKERINO_SRC_CORE_MQTT_PACKET_HPP
 
 #include "core/mqtt_codec.hpp"
 #include <cstdint>

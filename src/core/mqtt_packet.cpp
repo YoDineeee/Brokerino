@@ -1,21 +1,35 @@
 #include "core/mqtt_packet.hpp"
 
+#include <cstdint>
+#include <optional>
+#include <string>
+#include <vector>
+
 namespace brokerino::core {
 
-//  Helpers 
+// ============================================================
+// Helpers
+// ============================================================
 
-static std::optional<std::uint16_t> ReadUint16(const std::vector<std::uint8_t>& buf,
-                                                std::size_t& pos) {
+// Read a 2-byte big-endian uint16 from buffer at `pos` and advance it.
+static std::optional<std::uint16_t>
+ReadUint16(const std::vector<std::uint8_t>& buf, std::size_t& pos) {
     if (pos + 2 > buf.size()) return std::nullopt;
-    const std::uint16_t val = (buf[pos] << 8) | buf[pos + 1];
+
+    const std::uint16_t value =
+        (static_cast<std::uint16_t>(buf[pos]) << 8) |
+        static_cast<std::uint16_t>(buf[pos + 1]);
+
     pos += 2;
-    return val;
+    return value;
 }
 
-static std::optional<std::string> ReadString(const std::vector<std::uint8_t>& buf,
-                                              std::size_t& pos) {
+// Read an MQTT UTF-8 string (2-byte length prefix + data).
+static std::optional<std::string>
+ReadString(const std::vector<std::uint8_t>& buf, std::size_t& pos) {
     auto len = ReadUint16(buf, pos);
     if (!len) return std::nullopt;
+
     if (pos + *len > buf.size()) return std::nullopt;
 
     std::string str(buf.begin() + pos, buf.begin() + pos + *len);
@@ -23,26 +37,29 @@ static std::optional<std::string> ReadString(const std::vector<std::uint8_t>& bu
     return str;
 }
 
-// CONNECT 
+// ============================================================
+// CONNECT
+// ============================================================
 
-std::optional<ConnectPacket> ParseConnect(const std::vector<std::uint8_t>& payload) {
+std::optional<ConnectPacket>
+ParseConnect(const std::vector<std::uint8_t>& payload) {
     std::size_t pos = 0;
 
     // Protocol name must be "MQTT"
     auto protocol_name = ReadString(payload, pos);
     if (!protocol_name || *protocol_name != "MQTT") return std::nullopt;
 
-    // Protocol level must be 4 for MQTT 3.1.1
+    // Protocol level must be 4 (MQTT 3.1.1)
     if (pos >= payload.size()) return std::nullopt;
-    if (payload[pos++] != 4)   return std::nullopt;
+    if (payload[pos++] != 4) return std::nullopt;
 
     // Connect flags
     if (pos >= payload.size()) return std::nullopt;
     const std::uint8_t flags = payload[pos++];
 
-    const bool clean_session = (flags >> 1) & 1;
-    const bool has_username  = (flags >> 7) & 1;
-    const bool has_password  = (flags >> 6) & 1;
+    const bool clean_session = (flags >> 1) & 0x01;
+    const bool has_username  = (flags >> 7) & 0x01;
+    const bool has_password  = (flags >> 6) & 0x01;
 
     // Keep alive
     auto keep_alive = ReadUint16(payload, pos);
@@ -52,7 +69,7 @@ std::optional<ConnectPacket> ParseConnect(const std::vector<std::uint8_t>& paylo
     auto client_id = ReadString(payload, pos);
     if (!client_id) return std::nullopt;
 
-    // Optional username / password
+    // Username / Password
     std::string username;
     std::string password;
 
@@ -77,24 +94,33 @@ std::optional<ConnectPacket> ParseConnect(const std::vector<std::uint8_t>& paylo
     };
 }
 
-//  CONNACK 
+// ============================================================
+// CONNACK
+// ============================================================
 
-std::vector<std::uint8_t> SerializeConnack(const ConnackPacket& packet) {
-    std::vector<std::uint8_t> out = EncodeFixedHeader(PacketType::CONNACK, 0, 2);
+std::vector<std::uint8_t>
+SerializeConnack(const ConnackPacket& packet) {
+    std::vector<std::uint8_t> out =
+        EncodeFixedHeader(PacketType::CONNACK, 0, 2);
+
     out.push_back(packet.session_present ? 1 : 0);
     out.push_back(static_cast<std::uint8_t>(packet.return_code));
+
     return out;
 }
 
-//  PUBLISH 
+// ============================================================
+// PUBLISH
+// ============================================================
 
-std::optional<PublishPacket> ParsePublish(const FixedHeader& header,
-                                           const std::vector<std::uint8_t>& payload) {
+std::optional<PublishPacket>
+ParsePublish(const FixedHeader& header,
+             const std::vector<std::uint8_t>& payload) {
     std::size_t pos = 0;
 
-    const bool         dup    = (header.flags >> 3) & 1;
-    const std::uint8_t qos    = (header.flags >> 1) & 0x03;
-    const bool         retain =  header.flags        & 1;
+    const bool dup    = (header.flags >> 3) & 0x01;
+    const std::uint8_t qos = (header.flags >> 1) & 0x03;
+    const bool retain = header.flags & 0x01;
 
     auto topic = ReadString(payload, pos);
     if (!topic) return std::nullopt;
@@ -105,7 +131,8 @@ std::optional<PublishPacket> ParsePublish(const FixedHeader& header,
         if (!packet_id) return std::nullopt;
     }
 
-    std::vector<std::uint8_t> msg_payload(payload.begin() + pos, payload.end());
+    std::vector<std::uint8_t> msg_payload(
+        payload.begin() + pos, payload.end());
 
     return PublishPacket{
         std::move(*topic),
@@ -117,53 +144,77 @@ std::optional<PublishPacket> ParsePublish(const FixedHeader& header,
     };
 }
 
-std::vector<std::uint8_t> SerializePublish(const PublishPacket& packet) {
+std::vector<std::uint8_t>
+SerializePublish(const PublishPacket& packet) {
+    // Build variable header + payload first
     std::vector<std::uint8_t> body;
 
     // Topic
-    const std::uint16_t topic_len = static_cast<std::uint16_t>(packet.topic.size());
-    body.push_back(topic_len >> 8);
-    body.push_back(topic_len & 0xFF);
-    for (auto c : packet.topic) body.push_back(static_cast<std::uint8_t>(c));
+    const std::uint16_t topic_len =
+        static_cast<std::uint16_t>(packet.topic.size());
 
-    // Packet ID (QoS 1 only)
+    body.push_back(static_cast<std::uint8_t>(topic_len >> 8));
+    body.push_back(static_cast<std::uint8_t>(topic_len & 0xFF));
+
+    for (char c : packet.topic)
+        body.push_back(static_cast<std::uint8_t>(c));
+
+    // Packet ID (QoS > 0)
     if (packet.qos > 0 && packet.packet_id) {
-        body.push_back(*packet.packet_id >> 8);
-        body.push_back(*packet.packet_id & 0xFF);
+        body.push_back(static_cast<std::uint8_t>(*packet.packet_id >> 8));
+        body.push_back(static_cast<std::uint8_t>(*packet.packet_id & 0xFF));
     }
 
     // Payload
-    body.insert(body.end(), packet.payload.begin(), packet.payload.end());
+    body.insert(body.end(),
+                packet.payload.begin(),
+                packet.payload.end());
 
-    const std::uint8_t flags = (packet.dup    ? 0x08 : 0)
-                             | (packet.qos << 1)
-                             | (packet.retain ? 0x01 : 0);
+    const std::uint8_t flags =
+        (packet.dup ? 0x08 : 0) |
+        (packet.qos << 1) |
+        (packet.retain ? 0x01 : 0);
 
-    auto out = EncodeFixedHeader(PacketType::PUBLISH, flags,
-                                 static_cast<std::uint32_t>(body.size()));
+    auto out = EncodeFixedHeader(
+        PacketType::PUBLISH,
+        flags,
+        static_cast<std::uint32_t>(body.size())
+    );
+
     out.insert(out.end(), body.begin(), body.end());
     return out;
 }
 
-// PUBACK 
+// ============================================================
+// PUBACK
+// ============================================================
 
-std::optional<PubackPacket> ParsePuback(const std::vector<std::uint8_t>& payload) {
+std::optional<PubackPacket>
+ParsePuback(const std::vector<std::uint8_t>& payload) {
     std::size_t pos = 0;
+
     auto packet_id = ReadUint16(payload, pos);
     if (!packet_id) return std::nullopt;
+
     return PubackPacket{*packet_id};
 }
 
-std::vector<std::uint8_t> SerializePuback(const PubackPacket& packet) {
+std::vector<std::uint8_t>
+SerializePuback(const PubackPacket& packet) {
     auto out = EncodeFixedHeader(PacketType::PUBACK, 0, 2);
-    out.push_back(packet.packet_id >> 8);
-    out.push_back(packet.packet_id & 0xFF);
+
+    out.push_back(static_cast<std::uint8_t>(packet.packet_id >> 8));
+    out.push_back(static_cast<std::uint8_t>(packet.packet_id & 0xFF));
+
     return out;
 }
 
-// SUBSCRIBE 
+// ============================================================
+// SUBSCRIBE
+// ============================================================
 
-std::optional<SubscribePacket> ParseSubscribe(const std::vector<std::uint8_t>& payload) {
+std::optional<SubscribePacket>
+ParseSubscribe(const std::vector<std::uint8_t>& payload) {
     std::size_t pos = 0;
 
     auto packet_id = ReadUint16(payload, pos);
@@ -174,6 +225,7 @@ std::optional<SubscribePacket> ParseSubscribe(const std::vector<std::uint8_t>& p
     while (pos < payload.size()) {
         auto topic_filter = ReadString(payload, pos);
         if (!topic_filter) return std::nullopt;
+
         if (pos >= payload.size()) return std::nullopt;
 
         const std::uint8_t qos = payload[pos++] & 0x03;
@@ -185,20 +237,29 @@ std::optional<SubscribePacket> ParseSubscribe(const std::vector<std::uint8_t>& p
     return SubscribePacket{*packet_id, std::move(subscriptions)};
 }
 
-//  SUBACK 
+// ============================================================
+// SUBACK
+// ============================================================
 
-std::vector<std::uint8_t> SerializeSuback(const SubackPacket& packet) {
+std::vector<std::uint8_t>
+SerializeSuback(const SubackPacket& packet) {
     const std::uint32_t remaining =
         2 + static_cast<std::uint32_t>(packet.return_codes.size());
 
     auto out = EncodeFixedHeader(PacketType::SUBACK, 0, remaining);
-    out.push_back(packet.packet_id >> 8);
-    out.push_back(packet.packet_id & 0xFF);
-    for (auto code : packet.return_codes) out.push_back(code);
+
+    out.push_back(static_cast<std::uint8_t>(packet.packet_id >> 8));
+    out.push_back(static_cast<std::uint8_t>(packet.packet_id & 0xFF));
+
+    for (auto code : packet.return_codes)
+        out.push_back(code);
+
     return out;
 }
 
-// PINGRESP 
+// ============================================================
+// PINGRESP
+// ============================================================
 
 std::vector<std::uint8_t> SerializePingresp() {
     return EncodeFixedHeader(PacketType::PINGRESP, 0, 0);

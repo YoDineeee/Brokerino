@@ -1,42 +1,36 @@
-#ifndef BROKERINO_SRC_NETWORKING_CONNECTION_HPP_
-#define BROKERINO_SRC_NETWORKING_CONNECTION_HPP_
+#ifndef BROKERINO_SRC_NETWORKING_CONNECTION_HPP
+#define BROKERINO_SRC_NETWORKING_CONNECTION_HPP
 
-#include<cstdint>
+#include <cstdint>
 #include <functional>
-#include<vector>
-#include<string>
+#include <vector>
 
-namespace brokerino:: networking{ 
-    //these are callback types to avoid circular dependency with Broker 
-    using DataReceivedCallBack = std::function<void (int fd , const std::vector<uint8_t>&data)>;
-    using ClientDisconnectCallback = std::function <void (int fd)>;
+namespace brokerino::networking {
 
-    class Connection{
-        public:
+using DataReceivedCallback       = std::function<void(const std::vector<std::uint8_t>&)>;
+using ClientDisconnectedCallback = std::function<void()>;
 
-        static constexpr int kReadBufferSize = 4096 ;
+class Connection {
+public:
+    static constexpr std::size_t kReadBufferSize = 4096;
 
-        explicit Connection(int fd);
-        ~Connection();
+    explicit Connection(int fd);
+    ~Connection();
 
-        Connection(const Connection&) = delete;
-        Connection& operator=(const Connection&) = delete ;
+    Connection(const Connection&)            = delete;
+    Connection& operator=(const Connection&) = delete;
 
-        void Run (DataReceivedCallBack on_data, ClientConnectedCallBack on_disconnect);
+    void Run (DataReceivedCallback on_data,
+              ClientDisconnectedCallback on_disconnect);
+    void Send(const std::vector<std::uint8_t>& data);
+    void Close();
+    bool IsConnected() const;
+    int  GetFd()       const;
 
-        bool Send(const std::vector<uint8_t>&data);
-        void Close();
-        void IsConnected() const ;
-        int GetFd() const;
-
-        private:
-        int fd_;
-        bool connect_;
-
-        
-
-    };
-
+private:
+    int  fd_;
+    bool connected_;
+};
 
 } // namespace brokerino::networking
 
