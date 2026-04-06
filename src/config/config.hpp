@@ -1,3 +1,9 @@
+/**
+ * @file config.hpp
+ * @brief Simple configuration loader from brokerino.conf file.
+ */
+
+
 #ifndef BROKERINO_SRC_CONFIG_CONFIG_HPP
 #define BROKERINO_SRC_CONFIG_CONFIG_HPP
 

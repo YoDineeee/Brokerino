@@ -1,0 +1,37 @@
+PROJECT_NAME           = "Brokerino"
+PROJECT_BRIEF          = "Lightweight MQTT 3.1.1 Broker connecting AI Emotion Detection and Telegram Bot"
+PROJECT_LOGO           = 
+
+OUTPUT_DIRECTORY       = @CMAKE_SOURCE_DIR@/docs
+HTML_OUTPUT            = html
+
+INPUT                  = @CMAKE_CURRENT_SOURCE_DIR@/src \
+                         @CMAKE_CURRENT_SOURCE_DIR@/docs/mainpage.md
+
+INPUT_ENCODING         = UTF-8
+FILE_PATTERNS          = *.cpp *.hpp
+RECURSIVE              = YES
+EXCLUDE_PATTERNS       = */tests/* */build/* */.git/* */CMakeFiles/*
+
+SOURCE_BROWSER         = YES
+INLINE_SOURCES         = YES
+
+GENERATE_HTML          = YES
+HTML_TIMESTAMP         = YES
+HTML_DYNAMIC_SECTIONS  = YES
+
+HAVE_DOT               = YES
+CLASS_GRAPH            = YES
+COLLABORATION_GRAPH    = YES
+UML_LOOK               = YES
+CALL_GRAPH             = YES
+CALLER_GRAPH           = YES
+DOT_IMAGE_FORMAT       = svg
+
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+
+MARKDOWN_SUPPORT       = YES
+WARN_IF_UNDOCUMENTED   = YES
+QUIET                  = NO

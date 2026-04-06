@@ -1,3 +1,12 @@
+/**
+ * @file topic_trie.hpp
+ * @brief Efficient MQTT topic matching using a Trie (prefix tree).
+ *
+ * Supports MQTT wildcards `+` (single level) and `#` (multi-level).
+ * Used internally by SubscriptionMap for fast topic matching.
+ */
+
+
 #ifndef BROKERINO_SRC_MESSAGING_TOPIC_TRIE_HPP
 #define BROKERINO_SRC_MESSAGING_TOPIC_TRIE_HPP
 
@@ -11,6 +20,12 @@ struct TrieNode {
     std::unordered_map<std::string, TrieNode> children;
     bool is_end = false;
 };
+
+
+/**
+ * @class TopicTrie
+ * @brief Trie-based structure for MQTT topic filter matching.
+ */
 
 class TopicTrie {
 public:

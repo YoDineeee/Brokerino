@@ -1,3 +1,15 @@
+/**
+ * @file broker.hpp
+ * @brief Core MQTT broker class.
+ *
+ * This is the central class of Brokerino. It manages client connections,
+ * processes all MQTT packets, coordinates persistence, and maintains
+ * in-memory session and subscription state.
+ */
+
+
+
+
 #ifndef BROKERINO_SRC_BROKER_BROKER_HPP
 #define BROKERINO_SRC_BROKER_BROKER_HPP
 
@@ -19,15 +31,50 @@
 
 namespace brokerino {
 
+
+    /**
+ * @class Broker
+ * @brief Main MQTT broker implementation.
+ *
+ * Responsibilities:
+ * - Listening for incoming TCP connections
+ * - Spawning per-client threads
+ * - Decoding and dispatching MQTT packets
+ * - Managing sessions and subscriptions
+ * - Handling authentication
+ * - Coordinating persistence and recovery
+ */
+
 class Broker {
 public:
+
+/**
+     * @brief Construct a new Broker.
+     *
+     * @param db_path Path to the SQLite database file for persistence.
+     * @param port    TCP port on which the broker will listen (default: 1883).
+     */
+
+
     explicit Broker(const std::string& db_path, int port);
     ~Broker() = default;
 
     Broker(const Broker&)            = delete;
     Broker& operator=(const Broker&) = delete;
 
+    /**
+     * @brief Start the broker and begin accepting client connections.
+     *
+     * This function blocks until `Stop()` is called.
+     */
+
+
     void Run();
+
+    /**
+     * @brief Stop the broker and close all active connections.
+     */
+     
     void Stop();
 
 private:

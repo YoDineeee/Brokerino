@@ -3,6 +3,12 @@ build/
 build-*/
 out/
 .build/
+/build/
+docs/html/
+/docs/latex/
+*.o
+*.out
+*.log
 
 # CMake generated files that don't belong in source tree
 compile_commands.json     # symlink this from build/ instead: ln -s build/compile_commands.json .

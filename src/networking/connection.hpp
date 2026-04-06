@@ -1,3 +1,9 @@
+/**
+ * @file connection.hpp
+ * @brief Per-client TCP connection handler with non-blocking I/O.
+ */
+
+
 #ifndef BROKERINO_SRC_NETWORKING_CONNECTION_HPP
 #define BROKERINO_SRC_NETWORKING_CONNECTION_HPP
 

@@ -1,3 +1,13 @@
+/**
+ * @file storage.hpp
+ * @brief Persistent storage layer using SQLite.
+ *
+ * Handles saving and loading of MQTT sessions and QoS messages so that
+ * clients (especially the Telegram bot) can recover state after restart.
+ */
+
+
+
 #ifndef BROKERINO_SRC_PERSISTENCE_STORAGE_HPP
 #define BROKERINO_SRC_PERSISTENCE_STORAGE_HPP
 
@@ -10,8 +20,24 @@ struct sqlite3;
 
 namespace brokerino::persistence {
 
+    /**
+ * @class Storage
+ * @brief SQLite-based persistence for sessions and QoS messages.
+ *
+ * This class is responsible for:
+ * - Saving client sessions (subscriptions + clean_session flag)
+ * - Storing QoS 1 messages for later retransmission
+ * - Loading everything back on broker startup (see recovery.hpp)
+ */
+
+
 class Storage {
 public:
+/**
+     * @brief Opens (or creates) the SQLite database.
+     * @param db_path Path to the database file (e.g. "brokerino.db")
+     */
+     
     explicit Storage(const std::string& db_path);
     ~Storage();
 

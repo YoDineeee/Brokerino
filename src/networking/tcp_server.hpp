@@ -1,3 +1,9 @@
+/**
+ * @file tcp_server.hpp
+ * @brief Low-level TCP server for accepting MQTT clients.
+ */
+
+
 #ifndef BROKERINO_SRC_NETWORKING_TCP_SERVER_HPP
 #define BROKERINO_SRC_NETWORKING_TCP_SERVER_HPP
 

@@ -1,3 +1,12 @@
+/**
+ * @file mqtt_codec.hpp
+ * @brief MQTT 3.1.1 fixed header encoding/decoding utilities.
+ */
+
+ 
+
+
+
 #ifndef BROKERINO_SRC_CORE_MQTT_CODEC_HPP
 #define BROKERINO_SRC_CORE_MQTT_CODEC_HPP
 
